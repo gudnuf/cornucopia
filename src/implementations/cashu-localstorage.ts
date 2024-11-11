@@ -1,7 +1,8 @@
 import { type SendResponse, type Proof } from "@cashu/cashu-ts";
-import { type CashuProofLocker } from "../../interfaces/cashu-prooflocker.interface.js";
-import { type CashuStorage } from "../../interfaces/cashu-storage.interface.js";
-import { InsufficientFundsError } from "../../errors.js";
+import { type CashuProofLocker } from "../interfaces/cashu-prooflocker.interface.js";
+import { type CashuStorage } from "../interfaces/cashu-storage.interface.js";
+import { InsufficientFundsError } from "../errors.js";
+import { sumProofs } from "../helpers/proof.js";
 
 export class CashuLocalStorage implements CashuStorage {
   private PROOFS_KEY = `${this._mintUrl}_${this._unit}_proofs`;
@@ -11,10 +12,6 @@ export class CashuLocalStorage implements CashuStorage {
     private _unit: string,
     private _locker: CashuProofLocker
   ) {}
-
-  private _sumProofs(proofs: Array<Proof>): number {
-    return proofs.reduce((sum, proof) => sum + proof.amount, 0);
-  }
 
   // copied from cashu-ts - stripped `includeFees` param
   private _selectProofsToSend(
@@ -55,7 +52,7 @@ export class CashuLocalStorage implements CashuStorage {
       returnedProofs.push(...keep);
     }
 
-    if (this._sumProofs(selectedProofs) < amountToSend && nextBigger) {
+    if (sumProofs(selectedProofs) < amountToSend && nextBigger) {
       selectedProofs = [nextBigger];
     }
     return {
@@ -64,7 +61,7 @@ export class CashuLocalStorage implements CashuStorage {
     };
   }
 
-  private _getAllProofs(): Array<Proof> {
+  private loadAllProofs(): Array<Proof> {
     return JSON.parse(localStorage.getItem(this.PROOFS_KEY) || "[]");
   }
 
@@ -72,13 +69,13 @@ export class CashuLocalStorage implements CashuStorage {
     amount: number,
     action: (proofs: Array<Proof>) => Promise<Array<Proof>>
   ): Promise<void> {
-    const allProofs = this._getAllProofs();
+    const allProofs = this.loadAllProofs();
 
     // only use proofs not currently locked
     const unlockedProofs = this._locker.getUnlocked(allProofs);
 
     // make sure we have enough funds
-    if (this._sumProofs(unlockedProofs) < amount) {
+    if (sumProofs(unlockedProofs) < amount) {
       throw new InsufficientFundsError();
     }
 
@@ -86,26 +83,26 @@ export class CashuLocalStorage implements CashuStorage {
     const { send, keep } = this._selectProofsToSend(unlockedProofs, amount);
 
     // lock proofs for the duration of the transaction
-    await this._locker.lockProofs(send);
+    await this._locker.addLock(send);
 
     // try to execute the action
     try {
       const newProofs = await action(send);
 
-      // unlock and update persisted proofs
-      this._locker.unlockProofs(newProofs);
+      // remove lock from send proofs and update persisted proofs
+      this._locker.removeLock(send);
       localStorage.setItem(
         this.PROOFS_KEY,
         JSON.stringify([...keep, ...newProofs])
       );
     } catch (e) {
       // unlock to revert transaction
-      this._locker.unlockProofs(send);
+      this._locker.removeLock(send);
       throw e;
     }
   }
 
   public async getBalance(): Promise<number> {
-    return this._sumProofs(this._getAllProofs());
+    return sumProofs(this.loadAllProofs());
   }
 }

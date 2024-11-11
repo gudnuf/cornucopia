@@ -1,14 +1,16 @@
 import { type Proof } from "@cashu/cashu-ts";
-import { CashuProofLocker } from "./cashu-prooflocker.interface";
+import { CashuProofLocker } from "./cashu-prooflocker.interface.js";
+
+export type Transaction = (proofs: Proof[]) => Promise<Proof[]>
 
 export interface CashuStorage {
   /**
-   * @param amount amount to send
+   * @param minAmount minimum amount of proofs to lock
    * @param action function that takes amount of proofs and returns change proofs
    */
   transaction: (
-    amount: number,
-    action: (proofs: Array<Proof>) => Promise<Array<Proof>>
+    minAmount: number,
+    action: Transaction
   ) => Promise<void>;
 
   /**

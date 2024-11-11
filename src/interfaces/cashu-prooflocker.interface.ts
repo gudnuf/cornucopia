@@ -1,9 +1,9 @@
 import { type Proof } from "@cashu/cashu-ts";
 
 export interface CashuProofLocker {
-  lockProofs(proofs: Array<Proof>): Promise<void>;
+  addLock(proofs: Array<Proof>): Promise<void>;
 
-  unlockProofs(proofs: Array<Proof>): Promise<void>;
+  removeLock(proofs: Array<Proof>): Promise<void>;
 
   /**
    * @param proofs proofs to check
