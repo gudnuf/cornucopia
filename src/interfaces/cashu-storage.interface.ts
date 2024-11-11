@@ -1,16 +1,30 @@
 import { type Proof } from "@cashu/cashu-ts";
 import { CashuProofLocker } from "./cashu-prooflocker.interface.js";
 
+export type ProofSelector<T extends StartProofSelection> = (selection: T) => Promise<Proof[]>
+export type ProofFilter = (proofs: Proof[]) => Proof[] | Promise<Proof[]>
+
+export type TransactionOptions = { timeout?: number }
 export type Transaction = (proofs: Proof[]) => Promise<Proof[]>
 
-export interface CashuStorage {
+/** Base proof selector interface */
+export interface StartProofSelection {
+  /** Returns an array of proofs that are not locked */
+  getAvailableProofs(): Promise<Proof[]>
+
+  /** Returns all proofs whose locks have expired */
+  recoverProofs(): Promise<Proof[]>
+}
+
+export interface CashuStorage<T extends StartProofSelection> {
   /**
-   * @param minAmount minimum amount of proofs to lock
+   * @param selector an async method that returns the proofs to use in the transaction
    * @param action function that takes amount of proofs and returns change proofs
    */
   transaction: (
-    minAmount: number,
-    action: Transaction
+    selector: ProofSelector<T>,
+    action: Transaction,
+    options?: TransactionOptions
   ) => Promise<void>;
 
   /**
@@ -20,7 +34,7 @@ export interface CashuStorage {
 }
 
 export interface CashuStorageConstructor {
-  new (mintUrl: string, unit: string, locker: CashuProofLocker): CashuStorage;
+  new (mintUrl: string, unit: string, locker: CashuProofLocker): CashuStorage<StartProofSelection>;
 }
 
 export function createCashuStorage<T extends CashuStorageConstructor>(
@@ -28,6 +42,6 @@ export function createCashuStorage<T extends CashuStorageConstructor>(
   mintUrl: string,
   unit: string,
   locker: CashuProofLocker
-): CashuStorage {
+): CashuStorage<StartProofSelection> {
   return new constructor(mintUrl, unit, locker);
 }
