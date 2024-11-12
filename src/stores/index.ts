@@ -1,1 +1,1 @@
-export * from './cashu-localstorage.js'
+export * from './localstorage.js'
