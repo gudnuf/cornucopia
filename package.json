@@ -5,6 +5,7 @@
   "type": "module",
   "main": "build/index.js",
   "scripts": {
+    "test": "vitest",
     "build": "tsc",
     "format": "prettier -w ."
   },
@@ -39,8 +40,11 @@
   },
   "devDependencies": {
     "@cashu/cashu-ts": "^2.0.0-rc1",
+    "@types/node": "^22.9.0",
+    "happy-dom": "^15.11.3",
     "prettier": "^3.3.3",
-    "typescript": "^5.6.3"
+    "typescript": "^5.6.3",
+    "vitest": "^2.1.4"
   },
   "author": "",
   "license": "MIT"
