@@ -22,5 +22,5 @@ export interface CashuProofLocker {
    * @param proofs proofs to check
    * @returns proofs who lock is expired
    */
-  getExpired(proofs: Proof[]): Promise<Proof[]>
+  getExpired(proofs: Proof[]): Promise<Proof[]>;
 }

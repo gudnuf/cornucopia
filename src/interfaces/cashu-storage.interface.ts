@@ -1,19 +1,21 @@
 import { type Proof } from "@cashu/cashu-ts";
 import { CashuProofLocker } from "./cashu-prooflocker.interface.js";
 
-export type ProofSelector<T extends StartProofSelection> = (selection: T) => Promise<Proof[]>
-export type ProofFilter = (proofs: Proof[]) => Proof[] | Promise<Proof[]>
+export type ProofSelector<T extends StartProofSelection> = (
+  selection: T,
+) => Promise<Proof[]>;
+export type ProofFilter = (proofs: Proof[]) => Proof[] | Promise<Proof[]>;
 
-export type TransactionOptions = { timeout?: number }
-export type Transaction = (proofs: Proof[]) => Promise<Proof[]>
+export type TransactionOptions = { timeout?: number };
+export type Transaction = (proofs: Proof[]) => Promise<Proof[]>;
 
 /** Base proof selector interface */
 export interface StartProofSelection {
   /** Returns an array of proofs that are not locked */
-  getAvailableProofs(): Promise<Proof[]>
+  getAvailableProofs(): Promise<Proof[]>;
 
   /** Returns all proofs whose locks have expired */
-  recoverProofs(): Promise<Proof[]>
+  recoverProofs(): Promise<Proof[]>;
 }
 
 export interface CashuStorage<T extends StartProofSelection> {
@@ -24,7 +26,7 @@ export interface CashuStorage<T extends StartProofSelection> {
   transaction: (
     selector: ProofSelector<T>,
     action: Transaction,
-    options?: TransactionOptions
+    options?: TransactionOptions,
   ) => Promise<void>;
 
   /**
@@ -34,14 +36,18 @@ export interface CashuStorage<T extends StartProofSelection> {
 }
 
 export interface CashuStorageConstructor {
-  new (mintUrl: string, unit: string, locker: CashuProofLocker): CashuStorage<StartProofSelection>;
+  new (
+    mintUrl: string,
+    unit: string,
+    locker: CashuProofLocker,
+  ): CashuStorage<StartProofSelection>;
 }
 
 export function createCashuStorage<T extends CashuStorageConstructor>(
   constructor: T,
   mintUrl: string,
   unit: string,
-  locker: CashuProofLocker
+  locker: CashuProofLocker,
 ): CashuStorage<StartProofSelection> {
   return new constructor(mintUrl, unit, locker);
 }

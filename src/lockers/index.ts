@@ -1,1 +1,1 @@
-export * from './local-browser.js'
+export * from "./local-browser.js";

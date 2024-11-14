@@ -1,1 +1,1 @@
-export * from './min-amount.js'
+export * from "./min-amount.js";
