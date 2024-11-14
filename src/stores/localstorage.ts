@@ -68,6 +68,17 @@ export class CashuLocalStorage implements CashuStorage<StartProofSelection> {
       throw e;
     }
   }
+  public async receiveProofs(proofs: Array<Proof>): Promise<void> {
+    const existingProofs = this.loadAllProofs();
+    const existingIds = existingProofs.map(getProofUID);
+
+    // only save proofs not already in the store
+    const newProofs = proofs.filter(
+      (p) => !existingIds.includes(getProofUID(p)),
+    );
+
+    this.saveAllProofs([...existingProofs, ...newProofs]);
+  }
 
   public async getBalance(): Promise<number> {
     return sumProofs(this.loadAllProofs());

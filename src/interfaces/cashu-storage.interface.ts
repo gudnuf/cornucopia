@@ -29,6 +29,9 @@ export interface CashuStorage<T extends StartProofSelection> {
     options?: TransactionOptions,
   ) => Promise<void>;
 
+  /* adds proofs to the store */
+  receiveProofs: (proofs: Array<Proof>) => Promise<void>;
+
   /**
    * @returns current balance as the sum of all proofs
    */
