@@ -1,5 +1,5 @@
 {
-  "name": "cornucopia",
+  "name": "@gudfuf/cornucopia",
   "version": "0.1.0",
   "description": "Store and synchronize cashu proofs",
   "type": "module",
@@ -25,6 +25,14 @@
     "./stores/*": {
       "import": "./build/stores/*.js",
       "types": "./build/stores/*.d.ts"
+    },
+    "./lockers": {
+      "import": "./build/lockers/index.js",
+      "types": "./build/lockers/index.d.ts"
+    },
+    "./lockers/*": {
+      "import": "./build/lockers/*.js",
+      "types": "./build/lockers/*.d.ts"
     },
     "./selection": {
       "import": "./build/selection/index.js",
