@@ -18,7 +18,5 @@ test("getProofUID should generate deterministic UIDs from proof C value", () => 
   };
 
   /* Verify the generated UID matches expected hash */
-  expect(getProofUID(proof)).toBe(
-    "ed6e794156440b3e89f0952fd0f494252b15050b0998b9532ed8e88d1a5ac176",
-  );
+  expect(getProofUID(proof)).toBe("ed6e794156440b3e89f0952fd0f494252b15050b0998b9532ed8e88d1a5ac176");
 });

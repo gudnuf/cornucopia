@@ -1,0 +1,9 @@
+{
+  "$schema": "https://typedoc.org/schema.json",
+  "name": "AppleSauce",
+  "entryPoints": ["packages/*"],
+  "entryPointStrategy": "packages",
+  "packageOptions": {
+    "entryPoints": ["src/index.ts"]
+  }
+}

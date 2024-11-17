@@ -1,0 +1,74 @@
+{
+  "name": "@gudnuf/cornucopia",
+  "version": "0.1.0",
+  "description": "Store and synchronize cashu proofs",
+  "type": "module",
+  "main": "build/index.js",
+  "private": false,
+  "scripts": {
+    "test": "vitest",
+    "build": "tsc",
+    "prepack": "pnpm run build"
+  },
+  "exports": {
+    ".": {
+      "import": "./build/index.js",
+      "types": "./build/index.d.ts"
+    },
+    "./interfaces": {
+      "import": "./build/interfaces/index.js",
+      "types": "./build/interfaces/index.d.ts"
+    },
+    "./stores": {
+      "import": "./build/stores/index.js",
+      "types": "./build/stores/index.d.ts"
+    },
+    "./stores/*": {
+      "import": "./build/stores/*.js",
+      "types": "./build/stores/*.d.ts"
+    },
+    "./lockers": {
+      "import": "./build/lockers/index.js",
+      "types": "./build/lockers/index.d.ts"
+    },
+    "./lockers/*": {
+      "import": "./build/lockers/*.js",
+      "types": "./build/lockers/*.d.ts"
+    },
+    "./selection": {
+      "import": "./build/selection/index.js",
+      "types": "./build/selection/index.d.ts"
+    },
+    "./selection/*": {
+      "import": "./build/selection/*.js",
+      "types": "./build/selection/*.d.ts"
+    },
+    "./helpers": {
+      "import": "./build/helpers/index.js",
+      "types": "./build/helpers/index.d.ts"
+    },
+    "./helpers/*": {
+      "import": "./build/helpers/*.js",
+      "types": "./build/helpers/*.d.ts"
+    }
+  },
+  "dependencies": {
+    "@noble/hashes": "^1.5.0"
+  },
+  "peerDependencies": {
+    "@cashu/cashu-ts": "^2.0.0-rc1"
+  },
+  "devDependencies": {
+    "@cashu/cashu-ts": "^2.0.0-rc1",
+    "@types/node": "^22.9.0",
+    "happy-dom": "^15.11.3",
+    "typescript": "^5.6.3",
+    "vitest": "^2.1.4"
+  },
+  "author": "gudnuf",
+  "repository": {
+    "url": "https://github.com/gudnuf/cornucopia",
+    "directory": "packages/cornucopia"
+  },
+  "license": "MIT"
+}

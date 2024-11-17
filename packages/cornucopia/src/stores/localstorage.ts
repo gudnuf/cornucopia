@@ -32,8 +32,7 @@ export class CashuLocalStorage implements CashuStorage<StartProofSelection> {
     options?: TransactionOptions,
   ): Promise<void> {
     const selection: StartProofSelection = {
-      getAvailableProofs: async () =>
-        this.locker.getUnlocked(this.loadAllProofs()),
+      getAvailableProofs: async () => this.locker.getUnlocked(this.loadAllProofs()),
       recoverProofs: async () => {
         const all = this.loadAllProofs();
         const unlocked = await this.locker.getUnlocked(all);
@@ -73,9 +72,7 @@ export class CashuLocalStorage implements CashuStorage<StartProofSelection> {
     const existingIds = existingProofs.map(getProofUID);
 
     // only save proofs not already in the store
-    const newProofs = proofs.filter(
-      (p) => !existingIds.includes(getProofUID(p)),
-    );
+    const newProofs = proofs.filter((p) => !existingIds.includes(getProofUID(p)));
 
     this.saveAllProofs([...existingProofs, ...newProofs]);
   }
