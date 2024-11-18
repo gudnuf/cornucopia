@@ -16,9 +16,7 @@ export class BrowserLocker implements CashuProofLocker {
 
   async addLock(proofs: Array<Proof>, expiration: number): Promise<void> {
     const currentLocks = this.loadAllLocks();
-    const newLocks = proofs.map(
-      (p) => [getProofUID(p), expiration] as [string, number],
-    );
+    const newLocks = proofs.map((p) => [getProofUID(p), expiration] as [string, number]);
     const uniqueLocks = [...currentLocks];
 
     // Add new locks, replacing any existing ones for same UIDs
@@ -52,9 +50,7 @@ export class BrowserLocker implements CashuProofLocker {
   async getExpired(proofs: Proof[]): Promise<Proof[]> {
     const currentLocks = this.loadAllLocks();
     const now = Math.round(Date.now() / 1000);
-    const expiredUids = currentLocks
-      .filter(([_, exp]) => exp <= now)
-      .map(([uid]) => uid);
+    const expiredUids = currentLocks.filter(([_, exp]) => exp <= now).map(([uid]) => uid);
 
     return proofs.filter((p) => expiredUids.includes(getProofUID(p)));
   }

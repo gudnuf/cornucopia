@@ -4,10 +4,7 @@ import { sumProofs } from "../helpers/proof.js";
 import { ProofFilter } from "../interfaces/cashu-storage.interface.js";
 
 // copied from cashu-ts - stripped `includeFees` param
-function selectProofsToSend(
-  proofs: Array<Proof>,
-  amountToSend: number,
-): SendResponse {
+function selectProofsToSend(proofs: Array<Proof>, amountToSend: number): SendResponse {
   const sortedProofs = proofs.sort((a: Proof, b: Proof) => a.amount - b.amount);
   const smallerProofs = sortedProofs
     .filter((p: Proof) => p.amount <= amountToSend)
@@ -32,10 +29,7 @@ function selectProofsToSend(
   const returnedProofs = [];
   remainder -= selectedProofs[0].amount;
   if (remainder > 0) {
-    const { keep, send } = selectProofsToSend(
-      smallerProofs.slice(1),
-      remainder,
-    );
+    const { keep, send } = selectProofsToSend(smallerProofs.slice(1), remainder);
     selectedProofs.push(...send);
     returnedProofs.push(...keep);
   }

@@ -1,0 +1,40 @@
+{
+  "name": "@gudnuf/cornucopia-sore-better-sqlite",
+  "version": "0.1.0",
+  "description": "Store proofs with better-sqlite3",
+  "type": "module",
+  "main": "build/index.js",
+  "private": false,
+  "scripts": {
+    "test": "vitest run",
+    "build": "tsc",
+    "prepack": "pnpm run build"
+  },
+  "exports": {
+    ".": {
+      "import": "./build/index.js",
+      "types": "./build/index.d.ts"
+    }
+  },
+  "dependencies": {
+    "@gudnuf/cornucopia": "^0.1.0",
+    "@noble/hashes": "^1.5.0",
+    "better-sqlite3": "^11.5.0"
+  },
+  "peerDependencies": {
+    "@cashu/cashu-ts": "^2.0.0-rc1"
+  },
+  "devDependencies": {
+    "@cashu/cashu-ts": "^2.0.0-rc1",
+    "@types/better-sqlite3": "^7.6.11",
+    "@types/node": "^22.9.0",
+    "typescript": "^5.6.3",
+    "vitest": "^2.1.5"
+  },
+  "author": "gudnuf",
+  "repository": {
+    "url": "https://github.com/gudnuf/cornucopia",
+    "directory": "packages/cornucopia-store-better-sqlite"
+  },
+  "license": "MIT"
+}
