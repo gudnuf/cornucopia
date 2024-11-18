@@ -6,7 +6,7 @@
   "main": "build/index.js",
   "private": false,
   "scripts": {
-    "test": "vitest",
+    "test": "vitest run",
     "build": "tsc",
     "prepack": "pnpm run build"
   },
