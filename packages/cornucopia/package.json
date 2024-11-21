@@ -35,14 +35,6 @@
       "import": "./build/lockers/*.js",
       "types": "./build/lockers/*.d.ts"
     },
-    "./selection": {
-      "import": "./build/selection/index.js",
-      "types": "./build/selection/index.d.ts"
-    },
-    "./selection/*": {
-      "import": "./build/selection/*.js",
-      "types": "./build/selection/*.d.ts"
-    },
     "./helpers": {
       "import": "./build/helpers/index.js",
       "types": "./build/helpers/index.d.ts"

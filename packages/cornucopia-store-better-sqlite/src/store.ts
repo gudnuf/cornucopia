@@ -1,13 +1,6 @@
 import { Proof, SerializedDLEQ } from "@cashu/cashu-ts";
-import {
-  CashuProofLocker,
-  CashuStorage,
-  ProofSelector,
-  StartProofSelection,
-  Transaction,
-  TransactionOptions,
-} from "@gudnuf/cornucopia";
-import { getProofUID } from "@gudnuf/cornucopia/helpers";
+import { CashuProofLocker, CashuStorage, ProofFilter, Transaction, TransactionOptions } from "@gudnuf/cornucopia";
+import { getProofUID, selectProofsToSend, sumProofs } from "@gudnuf/cornucopia/helpers";
 import { type Database } from "better-sqlite3";
 
 type ProofRow = {
@@ -32,7 +25,7 @@ function convertRowToProof(row: ProofRow): Proof {
   };
 }
 
-export class CornucopiaSqliteStore implements CashuStorage<StartProofSelection> {
+export class CornucopiaSqliteStore implements CashuStorage {
   constructor(
     private locker: CashuProofLocker,
     private sqlite: Database,
@@ -66,11 +59,6 @@ CREATE TABLE IF NOT EXISTS "${this.table}" (
       .run();
   }
 
-  // TODO: optimize this
-  private loadAllProofs() {
-    return this.sqlite.prepare<[], ProofRow>(`SELECT * FROM "${this.table}"`).all().map(convertRowToProof);
-  }
-
   private removeProofs(ids: string[]) {
     const params = Array(ids.length).fill("?").join(",");
     const { changes } = this.sqlite.prepare<string[]>(`DELETE FROM "${this.table}" WHERE uid in ${params}`).run(...ids);
@@ -99,21 +87,34 @@ CREATE TABLE IF NOT EXISTS "${this.table}" (
     })();
   }
 
-  public async transaction(
-    selector: ProofSelector<StartProofSelection>,
-    action: Transaction,
-    options?: TransactionOptions,
-  ) {
-    const selection: StartProofSelection = {
-      getAvailableProofs: async () => this.locker.getUnlocked(this.loadAllProofs()),
-      recoverProofs: async () => {
-        const all = this.loadAllProofs();
-        const unlocked = await this.locker.getUnlocked(all);
-        return all.filter((p) => !unlocked.includes(p));
-      },
-    };
+  private loadAllProofs() {
+    return this.sqlite.prepare<[], ProofRow>(`SELECT * FROM "${this.table}"`).all().map(convertRowToProof);
+  }
 
-    const proofs = await selector(selection);
+  private async selectProofs(filter: ProofFilter) {
+    let proofs: Proof[];
+    if (filter.amount) {
+      const available = this.sqlite
+        .prepare<[number], ProofRow>(`SELECT * from "${this.table}" WHERE amount <= ?`)
+        .all(filter.amount)
+        .map(convertRowToProof);
+
+      const { send } = selectProofsToSend(available, filter.amount);
+      proofs = send;
+      if (sumProofs(proofs) < filter.amount) throw new Error("Failed to find enough proofs");
+    } else proofs = this.loadAllProofs();
+
+    const unlocked = await this.locker.getUnlocked(proofs);
+    if (filter.locked) proofs = proofs.filter((p) => !unlocked.includes(p));
+    else proofs = unlocked;
+
+    if (filter.expired) proofs = await this.locker.getExpired(proofs);
+
+    return proofs;
+  }
+
+  public async transaction(filter: ProofFilter, action: Transaction, options?: TransactionOptions) {
+    const proofs = await this.selectProofs(filter);
 
     const now = Math.round(Date.now() / 1000);
     const timeout = options?.timeout ?? 60_000;

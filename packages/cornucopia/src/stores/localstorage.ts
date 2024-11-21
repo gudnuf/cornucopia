@@ -1,15 +1,10 @@
 import { type Proof } from "@cashu/cashu-ts";
 
 import { type CashuProofLocker } from "../interfaces/cashu-prooflocker.interface.js";
-import {
-  StartProofSelection,
-  ProofSelector,
-  type CashuStorage,
-  TransactionOptions,
-} from "../interfaces/cashu-storage.interface.js";
-import { getProofUID, sumProofs } from "../helpers/proof.js";
+import { type CashuStorage, ProofFilter, TransactionOptions } from "../interfaces/cashu-storage.interface.js";
+import { getProofUID, selectProofsToSend, sumProofs } from "../helpers/proof.js";
 
-export class CashuLocalStorage implements CashuStorage<StartProofSelection> {
+export class CashuLocalStorage implements CashuStorage {
   private PROOFS_KEY = `${this.mintUrl}_${this.unit}_proofs`;
 
   constructor(
@@ -26,21 +21,30 @@ export class CashuLocalStorage implements CashuStorage<StartProofSelection> {
     localStorage.setItem(this.PROOFS_KEY, JSON.stringify(proofs));
   }
 
+  private async selectProofs(filter: ProofFilter) {
+    let proofs = this.loadAllProofs();
+
+    const unlocked = await this.locker.getUnlocked(proofs);
+    if (filter.locked) proofs = proofs.filter((p) => !unlocked.includes(p));
+    else proofs = unlocked;
+
+    if (filter.expired) proofs = await this.locker.getExpired(proofs);
+
+    if (filter.amount !== undefined) {
+      const { send } = selectProofsToSend(proofs, filter.amount);
+      proofs = send;
+      if (sumProofs(proofs) < filter.amount) throw new Error("Failed to find enough proofs");
+    }
+
+    return proofs;
+  }
+
   public async transaction(
-    selector: ProofSelector<StartProofSelection>,
+    filter: ProofFilter,
     action: (proofs: Array<Proof>) => Promise<Array<Proof>>,
     options?: TransactionOptions,
   ): Promise<void> {
-    const selection: StartProofSelection = {
-      getAvailableProofs: async () => this.locker.getUnlocked(this.loadAllProofs()),
-      recoverProofs: async () => {
-        const all = this.loadAllProofs();
-        const unlocked = await this.locker.getUnlocked(all);
-        return all.filter((p) => !unlocked.includes(p));
-      },
-    };
-
-    const proofs = await selector(selection);
+    const proofs = await this.selectProofs(filter);
 
     const now = Math.round(Date.now() / 1000);
     const timeout = options?.timeout ?? 60_000;
