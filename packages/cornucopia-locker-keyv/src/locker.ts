@@ -4,10 +4,10 @@ import { getProofUID } from "@gudnuf/cornucopia/helpers";
 import Keyv, { type KeyvStoreAdapter } from "keyv";
 
 export class CornucopiaKeyVLocker implements CashuProofLocker {
-  private keyv: Keyv;
+  private keyv: Keyv<number>;
 
-  constructor(adapter: KeyvStoreAdapter) {
-    this.keyv = new Keyv(adapter);
+  constructor(adapter?: KeyvStoreAdapter) {
+    this.keyv = new Keyv<number>(adapter);
   }
 
   async addLock(proofs: Array<Proof>, expiration: number): Promise<void> {
