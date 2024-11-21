@@ -1,0 +1,37 @@
+{
+  "name": "@gudnuf/cornucopia-locker-keyv",
+  "version": "0.1.0",
+  "description": "A proof locker using keyv",
+  "type": "module",
+  "main": "build/index.js",
+  "scripts": {
+    "test": "vitest run",
+    "build": "tsc",
+    "prepack": "pnpm run build"
+  },
+  "exports": {
+    ".": {
+      "import": "./build/index.js",
+      "types": "./build/index.d.ts"
+    }
+  },
+  "dependencies": {
+    "@gudnuf/cornucopia": "^0.1.0",
+    "keyv": "^5.2.1"
+  },
+  "peerDependencies": {
+    "@cashu/cashu-ts": "^2.0.0-rc1"
+  },
+  "devDependencies": {
+    "@cashu/cashu-ts": "^2.0.0-rc1",
+    "@types/node": "^22.9.0",
+    "typescript": "^5.6.3",
+    "vitest": "^2.1.5"
+  },
+  "author": "gudnuf",
+  "repository": {
+    "url": "https://github.com/gudnuf/cornucopia",
+    "directory": "packages/cornucopia-locker-keyv"
+  },
+  "license": "MIT"
+}

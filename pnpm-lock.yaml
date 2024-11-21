@@ -46,6 +46,28 @@ importers:
         specifier: ^2.1.4
         version: 2.1.5(@types/node@22.9.0)(happy-dom@15.11.6)
 
+  packages/cornucopia-locker-keyv:
+    dependencies:
+      '@gudnuf/cornucopia':
+        specifier: ^0.1.0
+        version: link:../cornucopia
+      keyv:
+        specifier: ^5.2.1
+        version: 5.2.1
+    devDependencies:
+      '@cashu/cashu-ts':
+        specifier: ^2.0.0-rc1
+        version: 2.0.0-rc3
+      '@types/node':
+        specifier: ^22.9.0
+        version: 22.9.0
+      typescript:
+        specifier: ^5.6.3
+        version: 5.6.3
+      vitest:
+        specifier: ^2.1.5
+        version: 2.1.5(@types/node@22.9.0)(happy-dom@15.11.6)
+
   packages/cornucopia-store-better-sqlite:
     dependencies:
       '@gudnuf/cornucopia':
@@ -281,6 +303,9 @@ packages:
 
   '@jridgewell/sourcemap-codec@1.5.0':
     resolution: {integrity: sha512-gv3ZRaISU3fjPAgNsriBRqGWQL6quFx04YMPW/zD8XMLsU32mhCCbfbO6KZFLjvYpCZ8zyDEgqsgf+PwPaM7GQ==}
+
+  '@keyv/serialize@1.0.1':
+    resolution: {integrity: sha512-kKXeynfORDGPUEEl2PvTExM2zs+IldC6ZD8jPcfvI351MDNtfMlw9V9s4XZXuJNDK2qR5gbEKxRyoYx3quHUVQ==}
 
   '@manypkg/find-root@1.1.0':
     resolution: {integrity: sha512-mki5uBvhHzO8kYYix/WRy2WX8S3B5wdVSc9D6KcU5lQNglP2yt58/VfLuAK49glRXChosY8ap2oJ1qgma3GUVA==}
@@ -761,6 +786,9 @@ packages:
 
   jsonfile@4.0.0:
     resolution: {integrity: sha512-m6F1R3z8jjlf2imQHS2Qez5sjKWQzbuuhuJ/FKYFRZvPE3PuHcSMVZzfsLhGVOkfd20obL5SWEBew5ShlquNxg==}
+
+  keyv@5.2.1:
+    resolution: {integrity: sha512-tpIgCaY02VCW2Pz0zAn4guyct+IeH6Mb5wZdOvpe4oqXeQOJO0C3Wo8fTnf7P3ZD83Vr9kghbkNmzG3lTOhy/A==}
 
   linkify-it@5.0.0:
     resolution: {integrity: sha512-5aHCbzQRADcdP+ATqnDuhhJ/MRIqDkZX5pyjFHRRysS8vZ5AbqGEoFIb6pYHPZ+L/OC2Lc+xT8uHVVR5CAK/wQ==}
@@ -1512,6 +1540,10 @@ snapshots:
 
   '@jridgewell/sourcemap-codec@1.5.0': {}
 
+  '@keyv/serialize@1.0.1':
+    dependencies:
+      buffer: 6.0.3
+
   '@manypkg/find-root@1.1.0':
     dependencies:
       '@babel/runtime': 7.26.0
@@ -1997,6 +2029,10 @@ snapshots:
   jsonfile@4.0.0:
     optionalDependencies:
       graceful-fs: 4.2.11
+
+  keyv@5.2.1:
+    dependencies:
+      '@keyv/serialize': 1.0.1
 
   linkify-it@5.0.0:
     dependencies:
