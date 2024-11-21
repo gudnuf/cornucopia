@@ -7,7 +7,7 @@
     "format": "prettier --write .",
     "docs": "typedoc",
     "version-packages": "changeset version && pnpm install --no-frozen-lockfile && pnpm format",
-    "release": "pnpm run -r build && changeset publish"
+    "release": "pnpm build && changeset publish"
   },
   "dependencies": {
     "@changesets/cli": "^2.27.9",
