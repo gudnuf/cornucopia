@@ -8,7 +8,7 @@ export type Transaction = (proofs: Proof[]) => Promise<Proof[]>;
 export interface ProofFilter {
   /** Minimum sum amount of proofs to select */
   amount?: number;
-  /** Whether to select unlocked, locked or all proofs */
+  /** Whether to select unlocked, locked proofs (defaults to false) */
   locked?: boolean;
   /** Select only proofs with expired locks */
   expired?: true;

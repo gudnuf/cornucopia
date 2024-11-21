@@ -1,6 +1,6 @@
 import { Proof, SerializedDLEQ } from "@cashu/cashu-ts";
 import { CashuProofLocker, CashuStorage, ProofFilter, Transaction, TransactionOptions } from "@gudnuf/cornucopia";
-import { getProofUID, selectProofsToSend } from "@gudnuf/cornucopia/helpers";
+import { getProofUID, selectProofsToSend, sumProofs } from "@gudnuf/cornucopia/helpers";
 import { type Database } from "better-sqlite3";
 
 type ProofRow = {
@@ -97,13 +97,12 @@ CREATE TABLE IF NOT EXISTS "${this.table}" (
 
       const { send } = selectProofsToSend(available, filter.amount);
       proofs = send;
+      if (sumProofs(proofs) < filter.amount) throw new Error("Failed to find enough proofs");
     } else proofs = this.loadAllProofs();
 
-    if (filter.locked !== undefined) {
-      const unlocked = await this.locker.getUnlocked(proofs);
-      if (filter.locked) proofs = proofs.filter((p) => !unlocked.includes(p));
-      else proofs = unlocked;
-    }
+    const unlocked = await this.locker.getUnlocked(proofs);
+    if (filter.locked) proofs = proofs.filter((p) => !unlocked.includes(p));
+    else proofs = unlocked;
 
     if (filter.expired) proofs = await this.locker.getExpired(proofs);
 

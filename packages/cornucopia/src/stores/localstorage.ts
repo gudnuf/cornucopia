@@ -24,17 +24,16 @@ export class CashuLocalStorage implements CashuStorage {
   private async selectProofs(filter: ProofFilter) {
     let proofs = this.loadAllProofs();
 
-    if (filter.locked !== undefined) {
-      const unlocked = await this.locker.getUnlocked(proofs);
-      if (filter.locked) proofs = proofs.filter((p) => !unlocked.includes(p));
-      else proofs = unlocked;
-    }
+    const unlocked = await this.locker.getUnlocked(proofs);
+    if (filter.locked) proofs = proofs.filter((p) => !unlocked.includes(p));
+    else proofs = unlocked;
 
     if (filter.expired) proofs = await this.locker.getExpired(proofs);
 
     if (filter.amount !== undefined) {
       const { send } = selectProofsToSend(proofs, filter.amount);
       proofs = send;
+      if (sumProofs(proofs) < filter.amount) throw new Error("Failed to find enough proofs");
     }
 
     return proofs;
