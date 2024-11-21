@@ -37,6 +37,8 @@ export class CornucopiaSqliteStore implements CashuStorage<StartProofSelection> 
     private locker: CashuProofLocker,
     private sqlite: Database,
     private table: string,
+    private mint: string,
+    private unit: string,
   ) {
     this.setup();
   }
@@ -77,8 +79,8 @@ CREATE TABLE IF NOT EXISTS "${this.table}" (
   }
 
   private insertProofs(proofs: Proof[]) {
-    const insert = this.sqlite.prepare<[number, string, string, string, string | null, string]>(
-      `INSERT INTO "${this.table}" (amount, keyset, secret, signature, dleq, uid) VALUES (?, ?, ?, ?, ?, ?)`,
+    const insert = this.sqlite.prepare<[number, string, string, string, string | null, string, string, string]>(
+      `INSERT INTO "${this.table}" (amount, keyset, secret, signature, dleq, uid, mint, unit) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
     );
 
     this.sqlite.transaction(() => {
@@ -90,9 +92,11 @@ CREATE TABLE IF NOT EXISTS "${this.table}" (
           proof.C,
           proof.dleq ? JSON.stringify(proof.dleq) : null,
           getProofUID(proof),
+          this.mint,
+          this.unit,
         );
       }
-    });
+    })();
   }
 
   public async transaction(
